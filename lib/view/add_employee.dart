@@ -112,41 +112,20 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
         ),
         backgroundColor: const Color(0xFF1DA1F2),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Employee Name Input
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                hintText: "Employee name",
-                prefixIcon: const Icon(
-                  Icons.person_2_outlined,
-                  color: Color(0xff1DA1F2),
-                ),
-                hintStyle: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16.sp,
-                  color: const Color(0xff949C9E),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-              ),
-            ),
-            SizedBox(height: 20.h),
-
-            // Role Selector
-            GestureDetector(
-              onTap: showRoleSelector,
-              child: AbsorbPointer(
-                child: TextFormField(
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Employee Name Input
+                TextField(
+                  controller: nameController,
                   decoration: InputDecoration(
-                    hintText: "Select role",
+                    hintText: "Employee name",
                     prefixIcon: const Icon(
-                      Icons.work_outline,
+                      Icons.person_2_outlined,
                       color: Color(0xff1DA1F2),
                     ),
                     hintStyle: TextStyle(
@@ -157,94 +136,144 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                     ),
-                    suffixIcon: Icon(
-                      Icons.arrow_drop_down_rounded,
-                      size: 40.r,
-                      color: const Color(0xff1DA1F2),
-                    ),
-                  ),
-                  controller: TextEditingController(
-                    text: selectedRole ?? "Select role",
                   ),
                 ),
-              ),
-            ),
-            SizedBox(height: 20.h),
+                SizedBox(height: 20.h),
 
-            // Start and End Dates
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => openCustomDatePicker(context, true),
-                    child: AbsorbPointer(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: "Start Date",
-                          hintStyle: TextStyle(
-                              fontWeight: FontWeight.w400, fontSize: 16.sp),
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.all(12.w),
-                            child: Image.asset(
-                              "assets/images/calendar.png",
-                              width: 15.w,
-                              height: 15.h,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
+                // Role Selector
+                GestureDetector(
+                  onTap: showRoleSelector,
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        hintText: "Select role",
+                        prefixIcon: const Icon(
+                          Icons.work_outline,
+                          color: Color(0xff1DA1F2),
                         ),
-                        controller: startDateController,
+                        hintStyle: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16.sp,
+                          color: const Color(0xff949C9E),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        suffixIcon: Icon(
+                          Icons.arrow_drop_down_rounded,
+                          size: 40.r,
+                          color: const Color(0xff1DA1F2),
+                        ),
+                      ),
+                      controller: TextEditingController(
+                        text: selectedRole ?? "Select role",
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 10.w),
-                const Icon(Icons.arrow_forward),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => openCustomDatePicker(context, false),
-                    child: AbsorbPointer(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: "End Date",
-                          hintStyle: TextStyle(
-                              fontWeight: FontWeight.w400, fontSize: 16.sp),
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.all(12.w),
-                            child: Image.asset(
-                              "assets/images/calendar.png",
-                              width: 20.w,
-                              height: 20.h,
-                              fit: BoxFit.contain,
+                SizedBox(height: 20.h),
+
+                // Start and End Dates
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => openCustomDatePicker(context, true),
+                        child: AbsorbPointer(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              hintText: "Start Date",
+                              hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 16.sp),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(12.w),
+                                child: Image.asset(
+                                  "assets/images/calendar.png",
+                                  width: 15.w,
+                                  height: 15.h,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
                             ),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.r),
+                            controller: startDateController,
                           ),
                         ),
-                        controller: endDateController,
                       ),
                     ),
-                  ),
+                    SizedBox(width: 10.w),
+                    const Icon(Icons.arrow_forward),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => openCustomDatePicker(context, false),
+                        child: AbsorbPointer(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              hintText: "End Date",
+                              hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 16.sp),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(12.w),
+                                child: Image.asset(
+                                  "assets/images/calendar.png",
+                                  width: 20.w,
+                                  height: 20.h,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                            ),
+                            controller: endDateController,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            Spacer(),
+          ),
+          Spacer(),
+          Container(
+            width: double.infinity,
+            height: 1.h,
+            color: Colors.grey,
+          ),
 
-            // Bottom Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Bottom Buttons
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xffEDF8FF),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          6.r), // Set only 6.r border radius
+                    ),
+                  ),
                   child: Text(
                     "Cancel",
-                    style: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                    style: TextStyle(
+                      color: Color(0xff1DA1F2),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15.sp,
+                    ),
                   ),
+                ),
+                SizedBox(
+                  width: 10.w,
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -270,17 +299,26 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1DA1F2),
+                    elevation: 0,
+                    backgroundColor: const Color(0xff1DA1F2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          6.r), // Set only 6.r border radius
+                    ),
                   ),
                   child: Text(
                     "Save",
-                    style: TextStyle(fontSize: 14.sp, color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15.sp,
+                    ),
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
