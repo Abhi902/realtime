@@ -32,36 +32,50 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   void showRoleSelector() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Color(0xffFFFFFF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
       builder: (BuildContext context) {
         return Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+          padding: EdgeInsets.symmetric(
+            vertical: 10.h,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Select Role",
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10.h),
-              ListView.builder(
+              ListView.separated(
                 shrinkWrap: true,
                 itemCount: roles.length,
+                separatorBuilder: (context, index) => Container(
+                  width: double.infinity, // Ensures full width
+                  child: Divider(
+                    color: Color(0xffF2F2F2), // Grey line color
+                    thickness: 1, // Line thickness
+                    height: 1, // Minimized gap between line and text
+                  ),
+                ),
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      roles[index],
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
+                  return GestureDetector(
                     onTap: () {
                       setState(() {
                         selectedRole = roles[index];
                       });
                       Navigator.pop(context);
                     },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      child: Center(
+                        child: Text(
+                          roles[index],
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xff323238),
+                          ),
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),

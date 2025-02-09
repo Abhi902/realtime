@@ -27,7 +27,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
         title: Text(
           "Employee List",
           style: TextStyle(
-            color: Color(0xFFFFFFFF),
+            color: const Color(0xFFFFFFFF),
             fontSize: 18.sp,
             fontWeight: FontWeight.w500,
           ),
@@ -112,7 +112,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff1DA1F2),
+                color: const Color(0xff1DA1F2),
               ),
             ),
           ),
@@ -146,7 +146,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff1DA1F2),
+                color: const Color(0xff1DA1F2),
               ),
             ),
           ),
