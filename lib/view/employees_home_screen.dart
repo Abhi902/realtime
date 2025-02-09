@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,10 +9,16 @@ import 'package:realtime/bloc/bloc/employee_event.dart';
 import 'package:realtime/bloc/bloc/employee_state.dart';
 import 'package:realtime/view/add_employee.dart';
 import 'package:intl/intl.dart';
+import 'package:realtime/view/update_employee.dart';
 
-class EmployeesScreen extends StatelessWidget {
+class EmployeesScreen extends StatefulWidget {
   const EmployeesScreen({super.key});
 
+  @override
+  State<EmployeesScreen> createState() => _EmployeesScreenState();
+}
+
+class _EmployeesScreenState extends State<EmployeesScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -42,6 +50,7 @@ class EmployeesScreen extends StatelessWidget {
               if (state.employees.isEmpty) {
                 return _buildEmptyState();
               } else {
+                log(state.employees.toString());
                 return _buildEmployeeList(state.employees, context);
               }
             } else if (state is EmployeeError) {
@@ -97,17 +106,32 @@ class EmployeesScreen extends StatelessWidget {
       children: [
         // Current Employees Section
         if (currentEmployees.isNotEmpty) ...[
-          Text(
-            "Current employees",
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+          SizedBox(height: 10.h),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Current employees",
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: Color(0xff1DA1F2),
+              ),
             ),
           ),
           SizedBox(height: 10.h),
           ...currentEmployees
-              .map((employee) => _buildEmployeeCard(employee, isCurrent: true))
+              .map((employee) => GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => UpdateEmployeeScreen(
+                                  employeeId: employee["id"],
+                                  employeeData: employee,
+                                )));
+                  },
+                  child:
+                      _buildEmployeeCard(employee, isCurrent: true, context)))
               .toList(),
         ],
 
@@ -117,24 +141,38 @@ class EmployeesScreen extends StatelessWidget {
 
         // Previous Employees Section
         if (previousEmployees.isNotEmpty) ...[
-          Text(
-            "Previous employees",
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Previous employees",
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: Color(0xff1DA1F2),
+              ),
             ),
           ),
           SizedBox(height: 10.h),
           ...previousEmployees
-              .map((employee) => _buildEmployeeCard(employee, isCurrent: false))
+              .map((employee) => GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => UpdateEmployeeScreen(
+                                  employeeId: employee["id"],
+                                  employeeData: employee,
+                                )));
+                  },
+                  child:
+                      _buildEmployeeCard(employee, context, isCurrent: false)))
               .toList(),
         ],
       ],
     );
   }
 
-  Widget _buildEmployeeCard(Map<String, dynamic> employee,
+  Widget _buildEmployeeCard(Map<String, dynamic> employee, BuildContext context,
       {required bool isCurrent}) {
     final startDate = DateFormat("dd MMM, yyyy")
         .format(DateTime.parse(employee["startDate"]));
@@ -142,53 +180,75 @@ class EmployeesScreen extends StatelessWidget {
         ? DateFormat("dd MMM, yyyy").format(DateTime.parse(employee["endDate"]))
         : null;
 
-    return Container(
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
+    return Dismissible(
+      key: Key(employee["id"]), // Unique key for each employee
+      direction: DismissDirection.endToStart, // Swipe left to delete
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.only(right: 20.w),
+        color: Colors.red,
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Employee Name
-          Text(
-            employee["name"],
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.sp,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: 4.h),
+      onDismissed: (direction) {
+        // Trigger the DeleteEmployee event in the bloc
+        BlocProvider.of<EmployeeBloc>(context)
+            .add(DeleteEmployee(employee["id"]));
 
-          // Employee Position
-          Text(
-            employee["role"],
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: const Color(0xFF949C9E),
+        // Show a snackbar confirmation
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("${employee["name"]} deleted")),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        margin: EdgeInsets.only(bottom: 1.h),
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: Offset(0, 2),
             ),
-          ),
-          SizedBox(height: 8.h),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Employee Name
+            Text(
+              employee["name"],
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 4.h),
 
-          // Employee Dates
-          Text(
-            isCurrent
-                ? "From $startDate"
-                : "$startDate - $endDate", // Format date based on current/previous
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: const Color(0xFF949C9E),
+            // Employee Position
+            Text(
+              employee["role"],
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: const Color(0xFF949C9E),
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 8.h),
+
+            // Employee Dates
+            Text(
+              isCurrent
+                  ? "From $startDate"
+                  : "$startDate - $endDate", // Format date based on current/previous
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: const Color(0xFF949C9E),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

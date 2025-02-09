@@ -19,8 +19,9 @@ class AddEmployee extends EmployeeEvent {
 }
 
 class UpdateEmployee extends EmployeeEvent {
-  final String id;
-  final Map<String, dynamic> employeeData;
+  final String id; // Document ID of the employee in Firestore
+  final Map<String, dynamic> employeeData; // Updated employee data
+
   const UpdateEmployee(this.id, this.employeeData);
 
   @override

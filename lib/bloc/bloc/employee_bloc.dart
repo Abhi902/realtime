@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,6 +21,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
             ...data, // Merge with the document data
           };
         }).toList();
+        log("fetch employee triggered");
         emit(EmployeeLoaded(employees));
       } catch (e) {
         emit(EmployeeError(e.toString()));
@@ -35,14 +38,25 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
     });
 
     on<UpdateEmployee>((event, emit) async {
+      emit(EmployeeLoading()); // Emit loading state while updating
       try {
+        // Update the employee document in Firestore
         await firestore
             .collection('employees')
             .doc(event.id)
             .update(event.employeeData);
-        add(FetchEmployees()); // Refresh after updating
+
+        // Log success
+        log("Employee updated successfully: ${event.id}");
+
+        // Trigger a fetch to refresh the employee list
+        add(FetchEmployees());
       } catch (e) {
-        emit(EmployeeError(e.toString()));
+        // Log the error
+        log("Failed to update employee: ${e.toString()}");
+
+        // Emit an error state with the exception message
+        emit(EmployeeError("Failed to update employee: ${e.toString()}"));
       }
     });
 
