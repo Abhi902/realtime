@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:realtime/bloc/bloc/employee_bloc.dart';
+import 'package:realtime/bloc/bloc/employee_event.dart';
 import 'package:realtime/firebase_options.dart';
 import 'package:realtime/view/employees_home_screen.dart';
 
@@ -12,10 +13,16 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(BlocProvider(
+    create: (context) => EmployeeBloc(firestore: FirebaseFirestore.instance)
+      ..add(FetchEmployees()),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Initialize Firestore instance
@@ -24,12 +31,9 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       builder: (_, child) {
-        return BlocProvider(
-          create: (context) => EmployeeBloc(firestore: firestore),
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: EmployeesScreen(),
-          ),
+        return const MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: EmployeesScreen(),
         );
       },
     );

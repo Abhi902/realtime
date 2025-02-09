@@ -21,55 +21,53 @@ class EmployeesScreen extends StatefulWidget {
 class _EmployeesScreenState extends State<EmployeesScreen> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => EmployeeBloc(firestore: FirebaseFirestore.instance)
-        ..add(FetchEmployees()), // Trigger fetch employees event
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF2F2F2), // Scaffold background color
-        appBar: AppBar(
-          title: Text(
-            "Employee List",
-            style: TextStyle(
-              color: Color(0xFFFFFFFF),
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w500,
-            ),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF2F2F2), // Scaffold background color
+      appBar: AppBar(
+        title: Text(
+          "Employee List",
+          style: TextStyle(
+            color: Color(0xFFFFFFFF),
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w500,
           ),
-          backgroundColor: const Color(0xFF1DA1F2), // AppBar background color
-          elevation: 0,
         ),
-        body: BlocBuilder<EmployeeBloc, EmployeeState>(
-          builder: (context, state) {
-            if (state is EmployeeLoading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF1DA1F2),
-                ),
-              );
-            } else if (state is EmployeeLoaded) {
-              if (state.employees.isEmpty) {
-                return _buildEmptyState();
-              } else {
-                log(state.employees.toString());
-                return _buildEmployeeList(state.employees, context);
-              }
-            } else if (state is EmployeeError) {
-              return Center(child: Text("Error: ${state.message}"));
+        backgroundColor: const Color(0xFF1DA1F2), // AppBar background color
+        elevation: 0,
+      ),
+      body: BlocConsumer<EmployeeBloc, EmployeeState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          if (state is EmployeeLoading) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF1DA1F2),
+              ),
+            );
+          } else if (state is EmployeeLoaded) {
+            log("here is the new list ${state.employees.toString()}");
+            if (state.employees.isEmpty) {
+              return _buildEmptyState();
+            } else {
+              log(state.employees.toString());
+              return _buildEmployeeList(state.employees, context);
             }
-            return const Center(child: Text("Unexpected State"));
-          },
+          } else if (state is EmployeeError) {
+            return Center(child: Text("Error: ${state.message}"));
+          }
+          return const Center(child: Text("Unexpected State"));
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF1DA1F2),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: const Color(0xFF1DA1F2),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => AddEmployeeScreen()));
-          },
-        ),
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => AddEmployeeScreen()));
+        },
       ),
     );
   }
@@ -203,7 +201,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
         width: double.infinity,
         margin: EdgeInsets.only(bottom: 1.h),
         padding: EdgeInsets.all(12.w),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(

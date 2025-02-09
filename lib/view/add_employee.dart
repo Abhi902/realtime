@@ -256,13 +256,6 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                       return;
                     }
 
-                    log(nameController.text);
-                    log(selectedRole ?? "");
-
-                    log(startDate?.toIso8601String() ?? "");
-
-                    log(endDate?.toIso8601String() ?? "");
-
                     // Dispatch AddEmployee Event
                     BlocProvider.of<EmployeeBloc>(context).add(
                       AddEmployee({
@@ -273,12 +266,16 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                       }),
                     );
 
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1DA1F2),
                   ),
-                  child: Text("Save", style: TextStyle(fontSize: 14.sp)),
+                  child: Text(
+                    "Save",
+                    style: TextStyle(fontSize: 14.sp, color: Colors.white),
+                  ),
                 ),
               ],
             ),
