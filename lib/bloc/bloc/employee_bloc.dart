@@ -12,7 +12,13 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
       emit(EmployeeLoading());
       try {
         final snapshot = await firestore.collection('employees').get();
-        final employees = snapshot.docs.map((doc) => doc.data()).toList();
+        final employees = snapshot.docs.map((doc) {
+          final data = doc.data();
+          return {
+            "id": doc.id, // Include the document ID
+            ...data, // Merge with the document data
+          };
+        }).toList();
         emit(EmployeeLoaded(employees));
       } catch (e) {
         emit(EmployeeError(e.toString()));
