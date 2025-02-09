@@ -6,6 +6,7 @@ import 'package:realtime/bloc/bloc/employee_bloc.dart';
 import 'package:realtime/bloc/bloc/employee_event.dart';
 import 'package:realtime/bloc/bloc/employee_state.dart';
 import 'package:realtime/view/add_employee.dart';
+import 'package:intl/intl.dart';
 
 class EmployeesScreen extends StatelessWidget {
   const EmployeesScreen({super.key});
@@ -92,76 +93,102 @@ class EmployeesScreen extends StatelessWidget {
         .toList();
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      // padding: const EdgeInsets.all(16),
       children: [
         // Current Employees Section
         if (currentEmployees.isNotEmpty) ...[
-          const Text(
+          Text(
             "Current employees",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           ...currentEmployees
-              .map((employee) => _buildEmployeeCard(employee, context))
+              .map((employee) => _buildEmployeeCard(employee, isCurrent: true))
               .toList(),
         ],
 
         // Spacer
         if (currentEmployees.isNotEmpty && previousEmployees.isNotEmpty)
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
 
         // Previous Employees Section
         if (previousEmployees.isNotEmpty) ...[
-          const Text(
+          Text(
             "Previous employees",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           ...previousEmployees
-              .map((employee) => _buildEmployeeCard(employee, context))
+              .map((employee) => _buildEmployeeCard(employee, isCurrent: false))
               .toList(),
         ],
-
-        const SizedBox(height: 20),
-        const Text(
-          "Swipe left to delete",
-          style: TextStyle(color: Colors.grey),
-        ),
       ],
     );
   }
 
-  Widget _buildEmployeeCard(
-      Map<String, dynamic> employee, BuildContext context) {
-    return Dismissible(
-      key: Key(employee["id"]),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      onDismissed: (direction) {
-        BlocProvider.of<EmployeeBloc>(context)
-            .add(DeleteEmployee(employee["id"]));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${employee["name"]} deleted")),
-        );
-      },
-      child: Card(
-        child: ListTile(
-          title: Text(employee["name"],
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(
-            "${employee["position"]}\nFrom ${employee["startDate"]}" +
-                (employee["endDate"] != null
-                    ? " to ${employee["endDate"]}"
-                    : ""),
-            style: const TextStyle(fontSize: 14, color: Colors.black54),
+  Widget _buildEmployeeCard(Map<String, dynamic> employee,
+      {required bool isCurrent}) {
+    final startDate = DateFormat("dd MMM, yyyy")
+        .format(DateTime.parse(employee["startDate"]));
+    final endDate = employee["endDate"] != null
+        ? DateFormat("dd MMM, yyyy").format(DateTime.parse(employee["endDate"]))
+        : null;
+
+    return Container(
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
           ),
-          isThreeLine: true,
-        ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Employee Name
+          Text(
+            employee["name"],
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16.sp,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: 4.h),
+
+          // Employee Position
+          Text(
+            employee["role"],
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: const Color(0xFF949C9E),
+            ),
+          ),
+          SizedBox(height: 8.h),
+
+          // Employee Dates
+          Text(
+            isCurrent
+                ? "From $startDate"
+                : "$startDate - $endDate", // Format date based on current/previous
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: const Color(0xFF949C9E),
+            ),
+          ),
+        ],
       ),
     );
   }
