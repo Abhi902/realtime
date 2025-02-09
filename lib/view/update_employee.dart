@@ -65,6 +65,7 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
   void showRoleSelector() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Color(0xffffffff),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),

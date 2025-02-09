@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,7 +21,7 @@ class CustomDatePicker extends StatefulWidget {
 class _CustomDatePickerState extends State<CustomDatePicker> {
   late DateTime selectedDate;
   late DateTime displayedMonth;
-  String? selectedQuickAction;
+  String? selectedQuickAction = "Today";
 
   @override
   void initState() {
@@ -37,18 +39,22 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     });
   }
 
-  List<Widget> _buildQuickActions() {
+  Widget _buildQuickActionsGrid() {
     final quickActions = [
       {"label": "Today", "date": DateTime.now()},
       {
         "label": "Next Monday",
-        "date": DateTime.now()
-            .add(Duration(days: (8 - DateTime.now().weekday) % 7)),
+        "date": DateTime.now().add(Duration(
+            days: DateTime.now().weekday == 1
+                ? 7
+                : (8 - DateTime.now().weekday))),
       },
       {
         "label": "Next Tuesday",
-        "date": DateTime.now()
-            .add(Duration(days: (9 - DateTime.now().weekday) % 7)),
+        "date": DateTime.now().add(Duration(
+            days: DateTime.now().weekday == 2
+                ? 7
+                : ((9 - DateTime.now().weekday) % 7))),
       },
       {
         "label": "After 1 week",
@@ -56,29 +62,54 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       },
     ];
 
-    return quickActions.map((action) {
-      final isSelected = selectedQuickAction == action["label"];
-      return GestureDetector(
-        onTap: () => _onQuickAction(
-            action["label"] as String, action["date"] as DateTime),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
-          decoration: BoxDecoration(
-            color:
-                isSelected ? const Color(0xFF1DA1F2) : const Color(0xFFEDF8FF),
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-          child: Text(
-            action["label"] as String,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: isSelected ? Colors.white : const Color(0xFF1DA1F2),
-              fontWeight: FontWeight.bold,
-            ),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(child: _buildQuickActionButton(quickActions[0])),
+            SizedBox(width: 10.w), // Spacing between buttons
+            Expanded(child: _buildQuickActionButton(quickActions[1])),
+          ],
+        ),
+        SizedBox(height: 10.h), // Spacing between rows
+        Row(
+          children: [
+            Expanded(child: _buildQuickActionButton(quickActions[2])),
+            SizedBox(width: 10.w),
+            Expanded(child: _buildQuickActionButton(quickActions[3])),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionButton(Map<String, dynamic> action) {
+    final isSelected = selectedQuickAction == action["label"];
+
+    log("is selected date");
+    log(selectedQuickAction.toString());
+    log("Action lable ");
+    log(action["label"]);
+    return GestureDetector(
+      onTap: () =>
+          _onQuickAction(action["label"] as String, action["date"] as DateTime),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF1DA1F2) : const Color(0xFFEDF8FF),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          action["label"] as String,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: isSelected ? Colors.white : const Color(0xFF1DA1F2),
+            fontWeight: FontWeight.w400,
           ),
         ),
-      );
-    }).toList();
+      ),
+    );
   }
 
   void _onDateSelected(DateTime date) {
@@ -148,93 +179,127 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: const Color(0xFFFFFFFF),
+      insetPadding: EdgeInsets.all(10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 400.w), // Increased width
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Quick Actions
-              Wrap(
-                spacing: 10.w,
-                runSpacing: 10.h,
-                children: _buildQuickActions(),
-              ),
-              SizedBox(height: 16.h),
+      child: Padding(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Quick Actions
 
-              // Calendar
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        displayedMonth = DateTime(
-                            displayedMonth.year, displayedMonth.month - 1);
-                      });
-                    },
-                    icon: const Icon(Icons.chevron_left),
-                  ),
-                  Text(
-                    DateFormat('MMMM yyyy').format(displayedMonth),
-                    style:
-                        TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        displayedMonth = DateTime(
-                            displayedMonth.year, displayedMonth.month + 1);
-                      });
-                    },
-                    icon: const Icon(Icons.chevron_right),
-                  ),
-                ],
-              ),
-              _buildCalendar(),
+            _buildQuickActionsGrid(),
 
-              SizedBox(height: 16.h),
+            SizedBox(height: 16.h),
 
-              // Footer with Selected Date, Cancel, and Save Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_today,
-                          color: Color(0xff1DA1F2)),
-                      SizedBox(width: 8.w),
-                      Text(
-                        DateFormat('d MMM yyyy').format(selectedDate),
-                        style: TextStyle(fontSize: 14.sp),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text("Cancel",
-                            style: TextStyle(color: const Color(0xff949C9E))),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          widget.onDateSelected(selectedDate);
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff1DA1F2),
+            // Calendar
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      displayedMonth = DateTime(
+                          displayedMonth.year, displayedMonth.month - 1);
+                    });
+                  },
+                  icon: const Icon(Icons.chevron_left),
+                ),
+                Text(
+                  DateFormat('MMMM yyyy').format(displayedMonth),
+                  style:
+                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      displayedMonth = DateTime(
+                          displayedMonth.year, displayedMonth.month + 1);
+                    });
+                  },
+                  icon: const Icon(Icons.chevron_right),
+                ),
+              ],
+            ),
+            _buildCalendar(),
+
+            SizedBox(height: 16.h),
+
+            // Footer with Selected Date, Cancel, and Save Buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Image.asset(
+                      "assets/images/calendar.png",
+                      width: 25.w,
+                      height: 25.h,
+                      fit: BoxFit.contain,
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      selectedDate == widget.initialDate
+                          ? "No Date"
+                          : DateFormat('d MMM yyyy').format(selectedDate),
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffEDF8FF),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              6.r), // Set only 6.r border radius
                         ),
-                        child: const Text("Save"),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                          color: Color(0xff1DA1F2),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15.sp,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10.w,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        widget.onDateSelected(selectedDate);
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: const Color(0xff1DA1F2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              6.r), // Set only 6.r border radius
+                        ),
+                      ),
+                      child: Text(
+                        "Save",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
