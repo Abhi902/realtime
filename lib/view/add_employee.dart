@@ -115,7 +115,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
       appBar: AppBar(
-        automaticallyImplyLeading: true, // Ensure the back button appears
+        automaticallyImplyLeading: false, // Ensure the back button appears
         title: Text(
           "Add Employee Details",
           style: TextStyle(

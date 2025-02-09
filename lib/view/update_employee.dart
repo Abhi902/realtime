@@ -56,7 +56,8 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
 
     startDateController?.text =
         startDate != null ? DateFormat('d MMM yyyy').format(startDate!) : "";
-    endDateController?.text = DateFormat('d MMM yyyy').format(endDate!);
+    endDateController?.text =
+        endDate == null ? "" : DateFormat('d MMM yyyy').format(endDate!);
 
     log("controller ${startDateController?.text}");
     log("controller ${endDateController?.text}");
@@ -148,7 +149,7 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
       appBar: AppBar(
-        automaticallyImplyLeading: true, // Ensure the back button appears
+        automaticallyImplyLeading: false, // Ensure the back button appears
         title: Text(
           "Update Employee Details",
           style: TextStyle(
