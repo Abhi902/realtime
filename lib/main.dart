@@ -29,7 +29,8 @@ class MyApp extends StatelessWidget {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     return ScreenUtilInit(
-      designSize: const Size(375, 812),
+      splitScreenMode: true,
+      designSize: const Size(360, 784),
       builder: (_, child) {
         return const MaterialApp(
           debugShowCheckedModeBanner: false,
